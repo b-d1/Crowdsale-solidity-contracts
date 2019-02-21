@@ -24,11 +24,10 @@ contract CrowdsaleFactory {
     function create(string memory campaignName, uint256 _openingTime, uint256 _closingTime, uint256 _rate, address payable _wallet, string memory coinName, string memory coinSymbol, uint8 decimals) public returns (address, uint) {
 
         (uint tokenId, address tokenAddress) = createToken(coinName, coinSymbol, decimals);
-        uint campaignId = createCampaign(campaignName, _openingTime, _closingTime, _rate, _wallet, ERC20Mintable(tokenAddress));
+        ERC20Mintable genericCoin = ERC20Mintable(tokenAddress);
+        uint campaignId = createCampaign(campaignName, _openingTime, _closingTime, _rate, _wallet, genericCoin);
+        genericCoin.addMinter(address(crowdsales[campaignId].contractAddress));
         return (address(tokenAddress), campaignId);
-        //        ERC20Mintable genericCoin = ERC20Mintable(tokenAddress);
-        //        genericCoin.addMinter(address(crowdsales[campaignId].contractAddress));
-        //        created = true;
 
     }
 
@@ -47,10 +46,16 @@ contract CrowdsaleFactory {
         emit TokenCreated(name, symbol, decimals);
     }
 
-    function getTokenById(uint id) public returns (address) {
-        require(id > 0, "Invalid ID");
+    function getTokenById(uint id) public view returns (address) {
+        require(id >= 0, "Invalid ID");
         address token = tokens[id];
         return token;
+    }
+
+    function getCampaignById(uint id) public view returns (address, string memory) {
+        require(id >= 0, "Invalid ID");
+        Crowdsale memory crowdsale = crowdsales[id];
+        return (address(crowdsale.contractAddress), crowdsale.name);
     }
 
     function getNumTokens() public view returns (uint) {

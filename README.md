@@ -28,3 +28,5 @@ cni.create("NC ICO", block.timestamp + 100, block.timestamp + 86400, 1, accounts
 cni.getNumTokens().then(result => console.log(result.toNumber()))
 
 cni.getTokenById(1).then(result => console.log(result))
+
+cni.getCampaignById(1).then(result => console.log(result))
