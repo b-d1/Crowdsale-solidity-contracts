@@ -1,13 +1,19 @@
 # Crowdsale-solidity-contracts
 
+## Setup :
+
 npm install openzeppelin-solidity --save
 
 truffle compile
 
 truffle migrate
 
+truffle console
+
+## External requirements
 Ganache (app)
 
+## Truffle console commands
 
 let cni = await CrowdsaleFactory.deployed().then(instance => instance)
 
