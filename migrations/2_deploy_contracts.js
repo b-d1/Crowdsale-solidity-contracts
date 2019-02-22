@@ -22,19 +22,6 @@ module.exports = async function(deployer, network, accounts) {
 
     return deployer
         .then(() => {
-            return deployer.deploy(GenericCoin, coinName, coinSymbol, coinDecimals);
-        })
-        .then(() => {
-            return deployer.deploy(
-                GenericCrowdsale,
-                openingTime,
-                closingTime,
-                rate,
-                wallet,
-                GenericCoin.address
-            );
-        })
-        .then(() => {
             return deployer.deploy(CrowdsaleFactory)
         });
 
