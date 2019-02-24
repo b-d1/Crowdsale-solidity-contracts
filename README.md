@@ -15,18 +15,19 @@ Ganache (app)
 
 ## Truffle console commands
 
-let cni = await CrowdsaleFactory.deployed().then(instance => instance)
+let cfi = await CrowdsaleFactory.deployed().then(instance => instance)
+let tfi = await TokenFactory.deployed().then(instance => instance)
+tfi.createToken('NCCoin', 'NCC', 18)
 
 let accounts = await web3.eth.getAccounts()
-
 let blockNumber = await web3.eth.getBlockNumber()
-
 let block = await web3.eth.getBlock(blockNumber)
 
-cni.create("NC ICO", block.timestamp + 100, block.timestamp + 86400, 1, accounts[1], 'NCoin2', 'NCC', 18).then(result => {console.log(result)})
 
-cni.getNumTokens().then(result => console.log(result.toNumber()))
+cfi.create("NC ICO", block.timestamp + 100, block.timestamp + 86400, 1, accounts[1], 0, 0, 0, '0xaeCD719e33E81a5875AD213A5b932f40AeAc83b4').then(result => {console.log(result)})
 
-cni.getTokenById(1).then(result => console.log(result))
+tfi.getNumTokens().then(result => console.log(result.toNumber()))
 
-cni.getCampaignById(1).then(result => console.log(result))
+tfi.getTokenById(0).then(result => console.log(result))
+
+cfi.getCampaignById(0).then(result => console.log(result))

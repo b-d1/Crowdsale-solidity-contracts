@@ -15,6 +15,7 @@ contract CrowdsaleFactory {
         string name;
     }
 
+    // Starting from 0
     enum CampaignType {
         Simple,
         Timed,
@@ -22,28 +23,25 @@ contract CrowdsaleFactory {
         TimedCappedRefundable
     }
 
-
     uint private numCampaigns;
-    uint private numTokens;
     mapping (uint => CrowdsaleStruct) private crowdsales;
-    mapping (uint => address) private tokens;
 
-    event TokenCreated(string indexed name, string indexed symbol, uint8 decimals);
     event CampaignCreated(string indexed name);
     event TimedCampaignCreated(string indexed name);
 
 
-    function create(string memory campaignName, uint256 _openingTime, uint256 _closingTime, uint256 _rate, address payable _wallet, uint256 cap, uint256 goal, CampaignType campaignType, address tokenAddress) public returns (address, uint) {
+    function create(string memory campaignName, uint256 _openingTime, uint256 _closingTime, uint256 _rate, address payable _wallet, uint256 cap, uint256 goal, CampaignType campaignType, address tokenAddress) public returns (address, uint, address) {
 
         ERC20Mintable genericCoin = ERC20Mintable(tokenAddress);
         uint campaignId = createCampaign(_openingTime, _closingTime, _rate, _wallet, genericCoin, cap, goal, campaignType);
         crowdsales[campaignId].name = campaignName;
-        genericCoin.addMinter(crowdsales[campaignId].contractAddress);
+        genericCoin.addMinter(address(crowdsales[campaignId].contractAddress));
         emit CampaignCreated(campaignName);
-        return (address(tokenAddress), campaignId);
+        return (address(tokenAddress), campaignId, crowdsales[campaignId].contractAddress);
 
     }
 
+    // Helper function (because of stack overflow error - limited number of local variables in solidity)
     function createCampaign(uint256 _openingTime, uint256 _closingTime, uint256 _rate, address payable _wallet, ERC20Mintable genericCoin, uint256 cap, uint256 goal, CampaignType campaignType) internal returns (uint campaignId) {
 
         if(campaignType == CampaignType.Simple) {
@@ -91,18 +89,6 @@ contract CrowdsaleFactory {
         crowdsales[campaignId] = CrowdsaleStruct({contractAddress: address(crowdsaleAddress), name: ''});
     }
 
-    function createToken(string memory name, string memory symbol, uint8 decimals) internal returns (uint tokenId, address tokenAddress) {
-        tokenAddress = address(new GenericCoin(name, symbol, decimals));
-        tokenId = numTokens++;
-        tokens[tokenId] = tokenAddress;
-        emit TokenCreated(name, symbol, decimals);
-    }
-
-    function getTokenById(uint id) public view returns (address) {
-        require(id >= 0, "Invalid ID");
-        address token = tokens[id];
-        return token;
-    }
 
     function getCampaignById(uint id) public view returns (address, string memory) {
         require(id >= 0, "Invalid ID");
@@ -110,9 +96,6 @@ contract CrowdsaleFactory {
         return (address(crowdsale.contractAddress), crowdsale.name);
     }
 
-    function getNumTokens() public view returns (uint) {
-        return numTokens;
-    }
 
     function getNumCampaigns() public view returns (uint) {
         return numCampaigns;
