@@ -14,7 +14,7 @@ truffle console
 Ganache (app)
 
 ## Truffle console commands
-
+```
 let cfi = await CrowdsaleFactory.deployed().then(instance => instance)
 let tfi = await TokenFactory.deployed().then(instance => instance)
 tfi.createToken('NCCoin', 'NCC', 18)
@@ -31,3 +31,4 @@ tfi.getNumTokens().then(result => console.log(result.toNumber()))
 tfi.getTokenById(0).then(result => console.log(result))
 
 cfi.getCampaignById(0).then(result => console.log(result))
+```
